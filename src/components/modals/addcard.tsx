@@ -1,4 +1,10 @@
-import { FunctionComponent, forwardRef, useState, ChangeEvent } from "react";
+import {
+  FunctionComponent,
+  forwardRef,
+  useState,
+  ChangeEvent,
+  useEffect,
+} from "react";
 import {
   Grid,
   Dialog,
@@ -40,10 +46,20 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+type EditData = {
+  isStar: boolean;
+  content: string;
+  color: number;
+  date: string;
+};
+
 type CardModalProps = {
   isOpen: boolean;
   handleClose: Function;
   addCard: Function;
+  saveCard: Function;
+  editData?: EditData;
+  isEdit: boolean;
 };
 
 const Transition = forwardRef(function Transition(
@@ -62,6 +78,23 @@ const CardModal: FunctionComponent<CardModalProps> = (props) => {
 
   const [content, setContent] = useState("");
 
+  const [title, setTitle] = useState("Add Card");
+
+  useEffect(() => {
+    if (props.isEdit) {
+      setTitle("Edit Card");
+      const data = props.editData;
+      setStar(data?.isStar || false);
+      setContent(data?.content || "");
+      setColor(data?.color || 0);
+    } else {
+      setTitle("Add Card");
+      setStar(false);
+      setContent("");
+      setColor(0);
+    }
+  }, [props.isEdit, props.editData]);
+
   const handleChange = () => {
     setStar((star) => !star);
   };
@@ -76,8 +109,23 @@ const CardModal: FunctionComponent<CardModalProps> = (props) => {
     setContent("");
   };
 
-  const addCard = () => {
-    props.addCard(content, selectedColor, isStar);
+  const saveCard = () => {
+    if (props.isEdit) {
+      props.saveCard(
+        content,
+        selectedColor,
+        isStar,
+        new Date().toString().slice(0, 10)
+      );
+      return;
+    }
+
+    props.addCard(
+      content,
+      selectedColor,
+      isStar,
+      new Date().toString().slice(0, 10)
+    );
     reset();
   };
 
@@ -91,7 +139,7 @@ const CardModal: FunctionComponent<CardModalProps> = (props) => {
       aria-labelledby="alert-dialog-slide-title"
       aria-describedby="alert-dialog-slide-description"
     >
-      <DialogTitle>Add Card</DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Grid container justify="center">
           <Grid container>
@@ -135,8 +183,8 @@ const CardModal: FunctionComponent<CardModalProps> = (props) => {
             aria-label="maximum height"
             placeholder="Maximum 4 rows"
           />
-          <Button variant="outlined" color="primary" onClick={addCard}>
-            Add Card
+          <Button variant="outlined" color="primary" onClick={saveCard}>
+            {props.isEdit ? "Save Card" : "Add Card"}
           </Button>
         </Grid>
       </DialogContent>

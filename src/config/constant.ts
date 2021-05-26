@@ -1,7 +1,7 @@
 import { colors } from "@material-ui/core";
 
 export const cardColors = [
-  colors.yellow[400],
+  colors.yellow[800],
   colors.green[400],
   colors.pink[400],
   colors.purple[400],

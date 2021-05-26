@@ -3,39 +3,44 @@ import "./App.css";
 import Header from "./layout/header";
 import Content from "./layout/content";
 import Card from "./components/cards/cards";
-import CardModal from "./components/modals/addcard"
+import CardModal from "./components/modals/addcard";
 
-import { cardColors } from "./config/constant";
-import { ThemeProvider, colors, Grid } from "@material-ui/core";
+import { ThemeProvider } from "@material-ui/core";
 import theme from "./theme";
 
 function App() {
-  const [cards, setCards] = React.useState([]);
+  const [cards, setCards] = React.useState<
+    Array<{ content: string; color: number; isStar: boolean }>
+  >([]);
 
   const [cardModal, setCardModal] = React.useState(false);
 
   const handleOpen = () => {
-    setCardModal(true)
-  }
+    setCardModal(true);
+  };
 
   const handleClose = () => {
     setCardModal(false);
   };
 
-  const addCards = () => {
-    console.log("Hello!");
+  const addCards = (content: string, color: number, isStar: boolean) => {
+    setCards((cards) => [...cards, { content, color, isStar }]);
+
+    handleClose();
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <CardModal isOpen={cardModal} handleClose={handleClose} addCard={addCards} />
+      <CardModal
+        isOpen={cardModal}
+        handleClose={handleClose}
+        addCard={addCards}
+      />
       <Header addCards={handleOpen} />
       <Content>
-        <Card content="This is test card! asdfsa dfasdfas dfasdfasd fasdfsd fasdfasdf \n\n\n\n\n \nsdfasdf asdf" />
-        <Card content="This is test card! asdfsa dfasdfas dfasdfasd fasdfsd fasdfasdf \n\n\n\n\n \nsdfasdf asdf" />
-        <Card content="This is test card! asdfsa dfasdfas dfasdfasd fasdfsd fasdfasdf \n\n\n\n\n \nsdfasdf asdf" />
-        <Card content="This is test card! asdfsa dfasdfas dfasdfasd fasdfsd fasdfasdf \n\n\n\n\n \nsdfasdf asdf" />
-        <Card content="This is test card! asdfsa dfasdfas dfasdfasd fasdfsd fasdfasdf \n\n\n\n\n \nsdfasdf asdf" />
+        {cards.map((card, index) => (
+          <Card key={index} color={card.color} isStar={card.isStar} content={card.content} />
+        ))}
       </Content>
     </ThemeProvider>
   );

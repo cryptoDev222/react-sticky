@@ -1,13 +1,14 @@
-import { FunctionComponent, forwardRef, useState } from "react";
+import { FunctionComponent, forwardRef, useState, ChangeEvent } from "react";
 import {
   Grid,
-  Typography,
   Dialog,
   Slide,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   TextareaAutosize,
+  Button,
+  FormControlLabel,
+  Checkbox,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { TransitionProps } from "@material-ui/core/transitions";
@@ -17,17 +18,25 @@ import { cardColors } from "../../config/constant";
 const useStyles = makeStyles(() => ({
   colorCard: {
     height: "40px",
-    width: "40px",
     cursor: "pointer",
     "&:hover, &.active": {
       border: "1px solid #333",
     },
+  },
+  textField: {
+    width: "100%",
+    maxWidth: "100%",
+    margin: "12px 0px",
   },
   modalContainer: {
     width: "100vw",
   },
   modalPaper: {
     width: "100%",
+  },
+  checkBoxWrapper: {
+    width: "100%",
+    marginTop: "8px",
   },
 }));
 
@@ -49,6 +58,29 @@ const CardModal: FunctionComponent<CardModalProps> = (props) => {
 
   const [selectedColor, setColor] = useState(0);
 
+  const [isStar, setStar] = useState(false);
+
+  const [content, setContent] = useState("");
+
+  const handleChange = () => {
+    setStar((star) => !star);
+  };
+
+  const handleContentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+  };
+
+  const reset = () => {
+    setColor(0);
+    setStar(false);
+    setContent("");
+  };
+
+  const addCard = () => {
+    props.addCard(content, selectedColor, isStar);
+    reset();
+  };
+
   return (
     <Dialog
       classes={{ container: classes.modalContainer, paper: classes.modalPaper }}
@@ -61,31 +93,52 @@ const CardModal: FunctionComponent<CardModalProps> = (props) => {
     >
       <DialogTitle>Add Card</DialogTitle>
       <DialogContent>
-        <Grid container>
-          {cardColors.map((color, index) => (
-            <Grid
-              item
-              key={index}
-              lg={2}
-              md={2}
-              sm={2}
-              className={
-                selectedColor === index
-                  ? `${classes.colorCard} active`
-                  : classes.colorCard
+        <Grid container justify="center">
+          <Grid container>
+            {cardColors.map((color, index) => (
+              <Grid
+                item
+                key={index}
+                lg={2}
+                md={2}
+                sm={2}
+                xs={2}
+                className={
+                  selectedColor === index
+                    ? `${classes.colorCard} active`
+                    : classes.colorCard
+                }
+                onClick={() => setColor(index)}
+                style={{ background: color }}
+              ></Grid>
+            ))}
+          </Grid>
+          <Grid item className={classes.checkBoxWrapper}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isStar}
+                  onChange={handleChange}
+                  name="checkedB"
+                  color="primary"
+                />
               }
-              onClick={() => setColor(index)}
-              style={{ background: color }}
-            ></Grid>
-          ))}
+              label="Star"
+            />
+          </Grid>
+          <TextareaAutosize
+            value={content}
+            onChange={handleContentChange}
+            className={classes.textField}
+            rowsMax={4}
+            rows={4}
+            aria-label="maximum height"
+            placeholder="Maximum 4 rows"
+          />
+          <Button variant="outlined" color="primary" onClick={addCard}>
+            Add Card
+          </Button>
         </Grid>
-        <TextareaAutosize
-          rowsMax={4}
-          aria-label="maximum height"
-          placeholder="Maximum 4 rows"
-          defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-      ut labore et dolore magna aliqua."
-        />
       </DialogContent>
     </Dialog>
   );

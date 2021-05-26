@@ -20,7 +20,7 @@ const Content: FunctionComponent<ContentProps> = (props) => {
   const classes = useStyles();
 
   return (
-    <Grid container justify="space-evenly" className={classes.container}>
+    <Grid container justify="space-evenly" alignItems="stretch" className={classes.container}>
       {props.children}
     </Grid>
   );

@@ -61,7 +61,7 @@ const Cards: FunctionComponent<ContentProps> = (props) => {
   const classes = useStyles();
 
   return (
-    <Grid item lg={2} md={3} sm={6} xs={12}>
+    <Grid item lg={3} md={4} sm={6} xs={12}>
       <Paper
         className={classes.container}
         style={{ background: cardColors[props.color] }}
